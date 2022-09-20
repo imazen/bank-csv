@@ -19,12 +19,12 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
+title: "Common Format for Bank Transaction CSV Files"
+abbrev: "bankcsv"
 category: info
 
-docname: draft-todo-yourname-protocol-latest
-submissiontype: IETF  # also: "independent", "IAB", or "IRTF"
+docname: draft-river-bankcsv-latest
+submissiontype: independent
 number:
 date:
 consensus: true
@@ -32,22 +32,22 @@ v: 3
 area: AREA
 workgroup: WG Working Group
 keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+ - CSV
+ - Bank Transactions
+ - Accounting and reconciliation
 venue:
   group: WG
   type: Working Group
   mail: WG@example.com
   arch: https://example.com/WG
-  github: USER/REPO
+  github: imazen/bank-csv
   latest: https://example.com/LATEST
 
 author:
  -
-    fullname: Your Name Here
-    organization: Your Organization Here
-    email: your.email@example.com
+    fullname: Lilith River
+    organization: Imazen
+    email: lilith@imazen.io
 
 normative:
 
