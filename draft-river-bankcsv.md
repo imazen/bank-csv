@@ -64,7 +64,7 @@ TODO Abstract
 
 # Introduction
 
-This Bank Standard CSV specification describes a format based on RFC 4180 (Comma Separated Value) for bank transaction data in order to improve interoperability and accuracy of data transfers between applications and services. Design priorities include human-readability, machine-readability, compatibility with existing software, ease of implementation, and utility for spreadsheet, bookkeeping, budgeting, and tax purposes.
+This Bank Standard CSV specification describes a format based on RFC 4180 (Comma Separated Value) for bank transaction and statement data in order to improve interoperability and accuracy of data transfers between applications and services. Design priorities include human-readability, machine-readability, compatibility with existing software, ease of implementation, and utility for spreadsheet, bookkeeping, budgeting, and tax purposes.
 
 While the vast majority of financial institions permit data to be exported to CSV, no standard format exists to allow parsers to be reused for files from different institutions. In addition, some instutions regularly change the structure of their CSV files in incompatible ways or fail to provide essential information, which can cause significant corruption of data and financial harm. By providing a common format and example validators and parsers/exporters, code reuse will become much easier both for data consumers and data exporters.
 
@@ -88,8 +88,14 @@ Bank CSV files must also strictly comply with RFC 4180 regarding the CSV format.
 
 ## Conventions
 
-1. Files MUST always begin with a header row
-2. Files MUST be encoded in UTF-8. A UTF-8 Byte Order Mark MAY be used. 
+1. Files MUST always begin with a header row. 
+The last column of the header row shall be a quoted string of key-value pairs used by parsers for modular versioning. Ex "type=bankcsv;bankcsv=v1.1;include=categories,_chase*;_chase=v2".
+No key or value may contain quotes, commas, equal signs, or semicolons. The "type" and "v" values are required.
+"v" and other version fields shall be a semver 2.0 compliant value corresponding with the version of the file format. 
+For transaction data, "type" shall be "bankcsv". Additional custom fields may be specified and versioned here. All custom fields must be prefixed with _
+All values for this column shall be 
+empty. TODO: Test if spaces are needed in the k/v header to prevent table/spreadsheet layout issues.
+2. Files MUST be encoded in UTF-8. A UTF-8 Byte Order Mark SHOULD be used. Some spreadsheet applications do not detect UTF-8 reliably.  
 3. Files MUST strictly conform to RFC 4180, including regarding use of commas, newlines, quoted values, and quote escaping.
 4. Financial institutions MUST select a permanent identifier (hereafter "bankid") representing the company or parent organization. This identifier MUST be alphanumeric and lowercase and cannot begin with a number ([a-z][a-z0-9]+). The identifier SHOULD remain consistent over time. This identifier SHOULD as short as possible. The identifier SHOULD NOT conflict with identifiers already in use by unaffiliated organizations. This identifier is important for allowing parsers to distinguish between custom fields and applications to handle banks as distinct entities.
 5. Custom Fields MUST be prefixed with an underscore, "bankid", and another underscore. For example "_greatbank_Teleport Id"
@@ -118,6 +124,8 @@ Bank CSV files must also strictly comply with RFC 4180 regarding the CSV format.
 
 ## Columns in Account Files (.accounts.csv)
 
+The last cell in the header column shall include "type=statements;statements=v1.0"
+
 1. Account ID
 2. Currency Code
 3. Opening Balance
@@ -129,6 +137,37 @@ Bank CSV files must also strictly comply with RFC 4180 regarding the CSV format.
 9. Liability Account
 10. SHA256 of file contents
 12. Transaction File URL
+13. Authoritative (true/false)
+
+The QTD/YTD/MTD does not require a hash but must at minimum include a last updated date (which can be the date of the most recent transaction).
+On the day that an account statement is generated (or ____ if not scheduled), a bankcsv statement shall also be created and stored. In addition, the most recent year, quarter shall be generated if they do not already exist. 
+The YTD and QTD shall also be updated on that day.
+
+The statement list must indicate which statements are authoritative. All posted transactions in every listed account must be found within the authoritative set. 
+Duplicate transactions within the authoritative set are not permitted; statements within the authoritative set for a given account may not overlap.
+
+Normalcase - the least error-prone casing for a given language (some langs don't have lower?) 
+
+Created Date
+Posted Date
+IncreaseToAssets (customer assets)
+Amount
+45
+
+Statement generation 
+
+Transfer IDs should match within a bank and preferably outside a bank.
+
+Card charge, balance payment, balance transfer in/out, 
+
+Require schema 
+
+
+Csv Statements must be generated at least on pdf interval.
+
+Transfers between accounts for the same customer must indicate they are transfers, the id of the paired account, and a reference number that will be present on both transacations
+
+Swift/iban/ach 
 
 
 Positive amounts should increase customer assets or reduce their liabilities.  Negative amounts should reduce customer assets or increase liabilities. 
